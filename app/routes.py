@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, Blueprint
-from app.work_with_url import get_video_summarize, get_video_id_from_url
+from app.work_with_url import fetch_transcript
 api = Blueprint("api", __name__)
 
 
@@ -16,7 +16,6 @@ def summarize_video():
     if not youtube_url:
         return jsonify({"error": "You must pass the video URL"}), 400
 
-    youtube_id = get_video_id_from_url(youtube_url)
-    video_text = get_video_summarize(youtube_id)
+    video_text = fetch_transcript(youtube_url)
 
     return jsonify({"summary": video_text})
