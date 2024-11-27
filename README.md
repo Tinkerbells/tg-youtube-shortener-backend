@@ -4,6 +4,12 @@ Follow these steps to set up and run the project:
 
 ---
 
+## ! To use asyncio with flask install flask with [async]
+
+```bash
+pip install flask[async]
+```
+
 ## 1. **Clone the Repository**
 
 First, clone the repository and navigate into the project directory:
@@ -20,27 +26,32 @@ cd tg-youtube-shortener-backend
 Creating a virtual environment ensures that dependencies are isolated for the project. Use one of the methods below based on your operating system:
 
 ### On Unix/Linux/macOS:
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
 ### On Windows:
+
 You have multiple options to activate the virtual environment:
 
 #### Using `python3`:
+
 ```bash
 python3 -m venv venv
 venv\Scripts\activate
 ```
 
 #### Using `py`:
+
 ```bash
 py -m venv venv
 venv\Scripts\activate
 ```
 
 #### Using `python`:
+
 ```bash
 python -m venv venv
 venv\Scripts\activate
@@ -63,11 +74,13 @@ pip install -r requirements.txt
 Start the server using the appropriate command for your operating system:
 
 ### On Windows:
+
 ```bash
 python .\server.py
 ```
 
 ### On Unix/Linux/macOS:
+
 ```bash
 python server.py
 ```
