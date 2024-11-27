@@ -1,39 +1,45 @@
+import asyncio
+import re
+from typing import Optional
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
-import re
 
-
-Global_languages = [
-    "ru", "en", "es", "fr", "de", "it", "pt", "zh", "ja", "ko", "ar", "hi",
-    "bn", "pa", "jv", "mr", "te", "tr", "th", "vi", "pl", "uk"
+# Расширенный список языков для поиска транскрипции
+LANGUAGES = [
+    'ru', 'en', 'fr', 'de', 'es', 'it', 'pt',
+    'nl', 'pl', 'uk', 'zh', 'ja', 'ko', 'tr'
 ]
 
 
-def get_video_id_from_url(url):
-    """Do ID from URL"""
+async def fetch_transcript(url: str) -> Optional[str]:
+    """
+    Асинхронно получает транскрипцию YouTube видео.
+    Пытается найти транскрипцию на любом из поддерживаемых языков.
 
-    match = re.search(r'v=([a-zA-Z0-9_-]+)', url)
+    Args:
+        url (str): URL YouTube видео
 
-    if match:
-        ID = match.group(1)
-        return ID
-    else:
-        return None
-
-
-def get_video_summarize(video_id):
+    Returns:
+        Optional[str]: Отформатированный текст транскрипции или None в случае ошибки
+    """
     try:
+        # Извлекаем ID видео из URL
+        video_id_match = re.search(r'(?:v=|\/)([0-9A-Za-z_-]{11}).*', url)
+        if not video_id_match:
+            return None
+        video_id = video_id_match.group(1)
 
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=Global_languages)
+        # Запускаем получение транскрипции в отдельном потоке через asyncio
+        transcript = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: YouTubeTranscriptApi.get_transcript(video_id, languages=LANGUAGES)
+        )
 
+        # Форматируем текст
         formatter = TextFormatter()
-        formatted_transcript = formatter.format_transcript(transcript)
-
-
-        summary = " ".join(formatted_transcript.split())
-
-        return summary
+        formatted_text = formatter.format_transcript(transcript).replace('\n', ' ')
+        return formatted_text
 
     except Exception as e:
-        return f"Error while extracting text: {str(e)}"
-
+        print(f"Ошибка при получении транскрипции: {str(e)}")
+        return None
