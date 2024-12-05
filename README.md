@@ -10,6 +10,20 @@ Follow these steps to set up and run the project:
 pip install flask[async]
 ```
 
+## Cookies
+
+Some videos are age restricted, so this module won't be able to access those videos without some sort of authentication. To do this, you will need to have access to the desired video in a browser. Then, you will need to download that pages cookies into a text file. You can use the Chrome extension [Cookie-Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=en) and select "Netscape" during export, or the Firefox extension [cookies.txt](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/).
+
+Once you have that, you can use it with the module to access age-restricted videos' captions like so.
+
+```python
+from youtube_transcript_api import YouTubeTranscriptApi
+
+YouTubeTranscriptApi.get_transcript(video_id, cookies='/path/to/your/cookies.txt')
+
+YouTubeTranscriptApi.get_transcripts([video_id], cookies='/path/to/your/cookies.txt')
+```
+
 ## 1. **Clone the Repository**
 
 First, clone the repository and navigate into the project directory:
