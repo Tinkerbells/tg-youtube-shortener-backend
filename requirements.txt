@@ -4,3 +4,4 @@ youtube_transcript_api~=0.6.2
 urllib3~=2.2.3
 python-dotenv==1.0.0
 faster_whisper
+yt-dlp

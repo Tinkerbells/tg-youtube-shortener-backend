@@ -1,6 +1,8 @@
 import asyncio
+import json
 import re
 import os
+import subprocess
 from typing import Optional
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
@@ -73,3 +75,49 @@ async def fetch_transcript(url: str) -> Optional[str]:
     except Exception as e:
         print(f"Ошибка при получении транскрипции: {str(e)}")
         return None
+
+
+def clean_youtube_url(url):
+    video_id = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", url)
+    return f"https://www.youtube.com/watch?v={video_id}"
+
+
+def get_video_metadata(url):
+    """Get video metadata. Вывод в виде словаря"""
+    try:
+        video_id_match = clean_youtube_url(url)
+        result = subprocess.run([
+            'yt-dlp',
+            '--dump-json',
+            '--no-playlist',
+            video_id_match
+        ], check=True, capture_output=True, text=True)
+
+
+        metadata = json.loads(result.stdout)
+        header_parts = {}
+
+        if title := metadata.get('title'):
+            header_parts["title"] = title
+
+        if channel := metadata.get('channel'):
+            header_parts["channel"] = channel
+
+        if upload_date := metadata.get('upload_date'):
+            header_parts["upload_date"] = upload_date
+
+        if duration := metadata.get('duration_string'):
+            header_parts["duration"] = duration
+
+        if views := metadata.get('view_count'):
+            header_parts["views"] = views
+
+        if description := metadata.get('description'):
+            header_parts["description"] = description
+
+        if tags := metadata.get('tags'):
+            header_parts["tags"] = tags
+
+        return header_parts
+    except Exception as e:
+        raise e
